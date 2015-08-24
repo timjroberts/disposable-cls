@@ -1,0 +1,22 @@
+{
+  "name": "disposable-cls",
+  "version": "1.0.0",
+  "description": "Provides disposable continuation local storage for Node.js.",
+  "main": "index.js",
+  "keywords": [
+    "threading", "shared", "context", "continuation", "disposable"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tim Roberts <tim@timjroberts.com>",
+  "license": "BSD",
+  "dependencies": {
+    "async-listener": "~0.5",
+    "emitter-listener": "~1.0"
+  },
+  "devDependencies": {
+    "typescript": "~1.5",
+    "grunt-execute": "~0.2"
+  }
+}
