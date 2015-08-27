@@ -19,7 +19,7 @@ module.exports = function (grunt) {
         typescriptBin: grunt.file.expand("./node_modules/typescript/bin/tsc") || grunt.file.expand("../node_modules/typescript/bin/tsc"),
         tslintBin: grunt.file.expand("./node_modules/tslint/bin/tslint") || grunt.file.expand("../node_modules/tslint/bin/tslint"),
         
-        typescriptFilesToLint: grunt.file.expand([ "./*.ts", "./src/**/*.ts" ]),
+        typescriptFiles: grunt.file.expand([ "./*.ts", "./src/**/*.ts" ]),
         
         execute: {
             typescript: {
@@ -32,7 +32,7 @@ module.exports = function (grunt) {
             },
             tslint: {
                 src: [ "<%=tslintBin %>" ],
-                options: { cwd: ".", args: "<%=typescriptFilesToLint %>" }
+                options: { cwd: ".", args: "<%=typescriptFiles %>" }
             }
         }
     });

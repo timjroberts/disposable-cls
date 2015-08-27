@@ -1,4 +1,4 @@
-import { ContextStackItem } from "./ContextStackItem";
+import { ContextStackItem } from "ContextStackItem";
 
 /**
  * Reacts to Node.js asynchronous scheduling events and manages a scope stack that will

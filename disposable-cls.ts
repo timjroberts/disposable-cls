@@ -1,1 +1,1 @@
-export { using, getCurrentObject } from "./src/disposable-cls";
+export { using, getCurrentObject } from "src/index";
