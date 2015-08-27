@@ -2,7 +2,7 @@
   "name": "disposable-cls",
   "version": "1.0.0",
   "description": "Provides disposable continuation local storage for Node.js.",
-  "main": "index.js",
+  "main": "./src/disposable-cls.js",
   "keywords": [
     "threading", "shared", "context", "continuation", "disposable"
   ],
@@ -16,7 +16,9 @@
     "emitter-listener": "~1.0"
   },
   "devDependencies": {
-    "typescript": "~1.5",
+    "matchdep": "~0.3",
+    "typescript": "1.6.0-dev.20150824",
+    "tslint": "~2.4",
     "grunt-execute": "~0.2"
   }
 }

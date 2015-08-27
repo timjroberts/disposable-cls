@@ -1,0 +1,1 @@
+export { using, getCurrentObject } from "./src/disposable-cls";
