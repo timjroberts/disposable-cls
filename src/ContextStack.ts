@@ -1,4 +1,4 @@
-import { ContextStackItem } from "ContextStackItem";
+import { ContextStackItem } from "./ContextStackItem";
 
 /**
  * Reacts to Node.js asynchronous scheduling events and manages a scope stack that will
@@ -14,7 +14,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	 * The contextual items pushed onto the managed scope stack are captured and maintained
 	 * throughout the lifetime of the asynchronous function being scheduled.
 	 */
-	public create(): any {
+	public create(): ContextStackItem {
 		let context = ContextStack.activeContext;
 
 		while (context) {
@@ -60,6 +60,22 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	}
 
 	/**
+	 * Resets the managed scope stack.
+	 * 
+	 * @returns A boolean flag indicating if the ContextStack could be reset.
+	 */
+	public tryReset(): boolean {
+		if (ContextStack.activeContext) {
+			return false;
+		}
+
+		ContextStack.activeContext = null;
+		ContextStack.scopeStack.splice(0, ContextStack.scopeStack.length);
+
+		return true;
+	}
+
+	/**
 	 * Pushes contextual items onto the managed scope stack so that they can be captured as part
 	 * of a context stack item when the next asynchronous function is being scheduled.
 	 * 
@@ -88,7 +104,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 		let object: Object = undefined;
 
 		while (context) {
-			object = context.data[objectTypeName];
+			object = context.data ? context.data[objectTypeName] : undefined;
 
 			if (object) {
 				return object;
@@ -115,6 +131,8 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 			context = context.parent;
 		}
+
+		ContextStack.activeContext = contextStackItem.parent;
 	}
 
 	/**

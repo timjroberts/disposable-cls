@@ -19,7 +19,7 @@ module.exports = function (grunt) {
         typescriptBin: grunt.file.expand("./node_modules/typescript/bin/tsc") || grunt.file.expand("../node_modules/typescript/bin/tsc"),
         tslintBin: grunt.file.expand("./node_modules/tslint/bin/tslint") || grunt.file.expand("../node_modules/tslint/bin/tslint"),
         
-        typescriptFiles: grunt.file.expand([ "./*.ts", "./src/**/*.ts" ]),
+        typescriptFiles: grunt.file.expand([ "./*.ts", "./src/**/*.ts", "./test/**/*.ts" ]),
         
         execute: {
             typescript: {
@@ -34,9 +34,26 @@ module.exports = function (grunt) {
                 src: [ "<%=tslintBin %>" ],
                 options: { cwd: ".", args: "<%=typescriptFiles %>" }
             }
+        },
+        
+        mochaTest: {
+            test: {
+                src: [ "./test/**/*.js" ],
+                options: { reporter: "spec", clearRequireCache: true, require: "./test/CoverageWrap" }
+            },
+            coverage: {
+                src: [ "./test/**/*.js" ],
+                options: {
+                    reporter: "html-cov",
+                    quiet: true,
+                    captureFile: "coverage.html"
+                }
+            }
         }
     });
     
-    grunt.registerTask("build",   [ "execute:typescript", "execute:tslint" ]);
-    grunt.registerTask("default", [ "build" ]);
+    grunt.registerTask("compile", [ "execute:typescript", "execute:tslint" ]);
+    grunt.registerTask("test",    [ "mochaTest" ]);
+    grunt.registerTask("build",   [ "compile", "test" ]);
+    grunt.registerTask("default", [ "compile" ]);
 }

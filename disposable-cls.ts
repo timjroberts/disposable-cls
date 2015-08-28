@@ -1,1 +1,1 @@
-export { using, getCurrentObject } from "src/index";
+export * from "./src/index";

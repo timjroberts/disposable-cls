@@ -52,7 +52,7 @@ export class ContextStackItem {
 	 * @returns The current reference count.
 	 */
 	public addRef(): number {
-		return this._refCount++;
+		return ++this._refCount;
 	}
 
 	/**
@@ -61,6 +61,6 @@ export class ContextStackItem {
 	 * @returns The current reference count.
 	 */
 	public release(): number {
-		return this._refCount--;
+		return --this._refCount;
 	}
 }
