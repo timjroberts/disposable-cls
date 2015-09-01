@@ -6,6 +6,10 @@
   "keywords": [
     "threading", "shared", "context", "continuation", "disposable"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timjroberts/disposable-cls.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,6 +25,7 @@
     "tslint": "~2.4",
     "grunt-execute": "~0.2",
     "grunt-mocha-test": "~0.12",
+    "grunt-release": "~0.13",
     "blanket": "~1.1",
     "chai": "~3.2"
   }

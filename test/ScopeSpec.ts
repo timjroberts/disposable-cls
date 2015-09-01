@@ -72,16 +72,17 @@ describe("Multiple scope block", () => {
 		let disposedCount = 0;
 		let doneFlag = false;
 
-		let disposeFunc = () => { disposedCount++; };
-		let f = () => {
+		let expectationsOnCompleteFunc = () => {
 			if (doneFlag) {
 				expect(disposedCount).to.be.equal(2);
 
 				return done();
 			}
 
-			setTimeout(f, 10);
+			setImmediate(expectationsOnCompleteFunc);
 		};
+
+		let disposeFunc = () => { disposedCount++; };
 
 		let mockObject1 = new SimpleDisposableMockObject(disposeFunc);
 		let mockObject2 = new SimpleDisposableMockObject(disposeFunc);
@@ -96,6 +97,6 @@ describe("Multiple scope block", () => {
 			});
 		});
 
-		setImmediate(f);
+		setImmediate(expectationsOnCompleteFunc);
 	});
 });
