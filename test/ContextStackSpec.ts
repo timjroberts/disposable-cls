@@ -1,22 +1,7 @@
 import * as mocha from "mocha";
 import { expect } from "chai";
 import { ContextStack } from "../src/ContextStack";
-
-/**
- * Represents a very simple object.
- */
-class SimpleMockObject { }
-
-/**
- * Represents a very simple 'disposable' object.
- */
-class SimpleDisposableMockObject {
-	constructor(private disposeCallback: Function) { }
-
-	public dispose() {
-		this.disposeCallback();
-	}
-}
+import { SimpleMockObject, SimpleDisposableMockObject } from "./MockObjects";
 
 /*
  * Test fixture for ContextStack
@@ -24,20 +9,7 @@ class SimpleDisposableMockObject {
 describe("ContextStack", () => {
 	let contextStack = new ContextStack();
 
-	beforeEach(() => {
-		if (!contextStack.tryReset()) {
-			throw new Error("ContextStack could not be reset.");
-		}
-	});
-
 	describe("when scheduling an asynchronous function", () => {
-		it("should capture a context stack item with no data if no context items have been pushed", () => {
-			let context = contextStack.create();
-
-			expect(context.data).to.be.undefined;
-			expect(context.parent).to.be.null;
-		});
-
 		it("should capture a context stack item with data containing the last pushed context items", () => {
 			contextStack.pushScope([new SimpleMockObject()]);
 
@@ -52,24 +24,30 @@ describe("ContextStack", () => {
 
 			contextStack.before(null, context);
 
-			let newContext = contextStack.create();
+			try {
+				let newContext = contextStack.create();
 
-			expect(newContext.parent).to.be.equal(context);
-
-			contextStack.after(null, context);
+				expect(newContext.parent).to.be.equal(context);
+			}
+			finally {
+				contextStack.after(null, context);
+			}
 		});
 
 		it("should add a reference to the parent context stack item during an asynchronous invocation chain", () => {
 			let context = contextStack.create();
 
-			contextStack.before(null, context);
+			try {
+				contextStack.before(null, context);
 
-			let newContext = contextStack.create();
+				let newContext = contextStack.create();
 
-			expect(context.refCount).to.be.equal(2);
-			expect(newContext.refCount).to.be.equal(1);
-
-			contextStack.after(null, context);
+				expect(context.refCount).to.be.equal(2);
+				expect(newContext.refCount).to.be.equal(1);
+			}
+			finally {
+				contextStack.after(null, context);
+			}
 		});
 	});
 
@@ -79,9 +57,12 @@ describe("ContextStack", () => {
 
 			contextStack.before(null, context);
 
-			expect(contextStack.tryReset()).to.be.false;
-
-			contextStack.after(null, context);
+			try {
+				expect(ContextStack.tryReset()).to.be.false;
+			}
+			finally {
+				contextStack.after(null, context);
+			}
 		});
 
 		it("should set the active context item before invocation", () => {
@@ -91,9 +72,12 @@ describe("ContextStack", () => {
 
 			contextStack.before(null, context);
 
-			expect(contextStack.findContextObjectFromScope(SimpleMockObject)).to.not.be.undefined;
-
-			contextStack.after(null, context);
+			try {
+				expect(contextStack.findContextObjectFromScope(SimpleMockObject)).to.not.be.undefined;
+			}
+			finally {
+				contextStack.after(null, context);
+			}
 		});
 
 		it("should dispose of the active context item after invocation", () => {
@@ -132,9 +116,12 @@ describe("ContextStack", () => {
 
 			contextStack.before(null, currentContext);
 
-			expect(contextStack.findContextObjectFromScope(SimpleMockObject)).to.be.undefined;
-
-			contextStack.after(null, currentContext);
+			try {
+				expect(contextStack.findContextObjectFromScope(SimpleMockObject)).to.be.undefined;
+			}
+			finally {
+				contextStack.after(null, currentContext);
+			}
 		});
 	});
 });

@@ -60,22 +60,6 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	}
 
 	/**
-	 * Resets the managed scope stack.
-	 * 
-	 * @returns A boolean flag indicating if the ContextStack could be reset.
-	 */
-	public tryReset(): boolean {
-		if (ContextStack.activeContext) {
-			return false;
-		}
-
-		ContextStack.activeContext = null;
-		ContextStack.scopeStack.splice(0, ContextStack.scopeStack.length);
-
-		return true;
-	}
-
-	/**
 	 * Pushes contextual items onto the managed scope stack so that they can be captured as part
 	 * of a context stack item when the next asynchronous function is being scheduled.
 	 * 
@@ -114,6 +98,22 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 		}
 
 		return undefined;
+	}
+
+	/**
+	 * Resets the managed scope stack.
+	 * 
+	 * @returns A boolean flag indicating if the ContextStack could be reset.
+	 */
+	public static tryReset(): boolean {
+		if (ContextStack.activeContext) {
+			return false;
+		}
+
+		ContextStack.activeContext = null;
+		ContextStack.scopeStack.splice(0, ContextStack.scopeStack.length);
+
+		return true;
 	}
 
 	/**
