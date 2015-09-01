@@ -1,3 +1,6 @@
+.npmignore
+tsconfig.json
 .vscode
 *.ts
+*.js.map
 coverage.html

@@ -49,11 +49,23 @@ module.exports = function (grunt) {
                     captureFile: "coverage.html"
                 }
             }
-        }
+        },
+        
+        release: {
+            options: {
+                bump:  true,
+                commitMessage: 'Release <%= version %>',
+                tag: true,
+                pushTags: true,
+                commit: true,
+                push: true
+            }
+        },
     });
     
     grunt.registerTask("compile", [ "execute:typescript", "execute:tslint" ]);
     grunt.registerTask("test",    [ "mochaTest" ]);
     grunt.registerTask("build",   [ "compile", "test" ]);
+    grunt.registerTask("publish", [ "execute:typescriptRelease", "test", "release" ]);
     grunt.registerTask("default", [ "compile" ]);
 }
