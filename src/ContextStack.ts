@@ -1,4 +1,5 @@
-import { ContextStackItem } from "./ContextStackItem";
+import wrapEmitter = require("emitter-listener");
+import {ContextStackItem} from "./ContextStackItem";
 
 /**
  * Reacts to Node.js asynchronous scheduling events and manages a scope stack that will
@@ -15,13 +16,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	 * throughout the lifetime of the asynchronous function being scheduled.
 	 */
 	public create(): ContextStackItem {
-		let context = ContextStack.activeContext;
-
-		while (context) {
-			context.addRef();
-
-			context = context.parent;
-		}
+		ContextStack.captureStackItem(ContextStack.activeContext);
 
 		return new ContextStackItem(ContextStack.scopeStack.pop(), ContextStack.activeContext);
 	}
@@ -101,6 +96,42 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	}
 
 	/**
+	* Bind an EventEmitter to the currently active context stack.
+	* 
+	* @param emitter The EventEmitter to bind.
+	*/
+	public bindEventEmitter(emitter: NodeJS.EventEmitter): void {
+		const ACTIVE_CONTEXT_PROPERTY: string = "__cls_capturedcontext";
+
+		let onAddListener = (listener: Function) => {
+			if (!listener) {
+				return;
+			}
+
+			listener[ACTIVE_CONTEXT_PROPERTY] = ContextStack.activeContext;
+		};
+
+		let onEmit = (listener: Function) => {
+			return function() {
+				let currentContext = ContextStack.activeContext;
+
+				try {
+					ContextStack.activeContext = <ContextStackItem>listener[ACTIVE_CONTEXT_PROPERTY];
+
+					return listener.apply(this, arguments);
+				}
+				finally {
+					ContextStack.activeContext = currentContext;
+				}
+			};
+		};
+
+		ContextStack.captureStackItem(ContextStack.activeContext);
+
+		wrapEmitter(emitter, onAddListener, onEmit);
+	}
+
+	/**
 	 * Resets the managed scope stack.
 	 * 
 	 * @returns A boolean flag indicating if the ContextStack could be reset.
@@ -114,6 +145,22 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 		ContextStack.scopeStack.splice(0, ContextStack.scopeStack.length);
 
 		return true;
+	}
+
+	/**
+	 * Captures a given context stack item by incrementing the reference counts across
+	 * the entire stack.
+	 * 
+	 * @param contextStackItem The context stack item that is to be captured.
+	 */
+	private static captureStackItem(contextStackItem: ContextStackItem): void {
+		let context = contextStackItem;
+
+		while (context) {
+			context.addRef();
+
+			context = context.parent;
+		}
 	}
 
 	/**

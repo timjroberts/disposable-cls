@@ -1,6 +1,6 @@
 import * as mocha from "mocha";
-import { expect } from "chai";
-import { ContextStackItem } from "../src/ContextStackItem";
+import {expect} from "chai";
+import {ContextStackItem} from "../src/ContextStackItem";
 
 /*
  * Test fixture for ContextStackItem

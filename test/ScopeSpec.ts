@@ -1,8 +1,8 @@
 import * as mocha from "mocha";
-import { expect } from "chai";
-import { ContextStack } from "../src/ContextStack";
-import { using, getCurrentObject } from "../src/index";
-import { SimpleMockObject, SimpleDisposableMockObject } from "./MockObjects";
+import {expect} from "chai";
+import {ContextStack} from "../src/ContextStack";
+import {using, getCurrentObject} from "../src/index";
+import {SimpleMockObject, SimpleDisposableMockObject} from "./MockObjects";
 
 describe("Single scope block", () => {
 	it("should allow retrieval of a context item", (done) => {

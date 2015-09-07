@@ -1,7 +1,7 @@
 import * as mocha from "mocha";
-import { expect } from "chai";
-import { ContextStack } from "../src/ContextStack";
-import { SimpleMockObject, SimpleDisposableMockObject } from "./MockObjects";
+import {expect} from "chai";
+import {ContextStack} from "../src/ContextStack";
+import {SimpleMockObject, SimpleDisposableMockObject} from "./MockObjects";
 
 /*
  * Test fixture for ContextStack

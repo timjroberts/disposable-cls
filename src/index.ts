@@ -1,4 +1,4 @@
-import { ContextStack } from "./ContextStack";
+import {ContextStack} from "./ContextStack";
 
 // Pull in the async-listener pollyfil if required
 if (!process.addAsyncListener) {
@@ -27,6 +27,15 @@ export function using(contextItems: Object[], asyncFunction: Function): void {
  */
 export function getCurrentObject(objectType: Function): Object {
 	return contextStack.findContextObjectFromScope(objectType);
+}
+
+/**
+ * Bind an EventEmitter to the currently active context stack.
+ * 
+ * @param emitter The EventEmitter to bind.
+ */
+export function bindEventEmitter(emitter: NodeJS.EventEmitter): void {
+	contextStack.bindEventEmitter(emitter);
 }
 
 

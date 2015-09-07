@@ -1,6 +1,6 @@
 import * as mocha from "mocha";
-import { expect } from "chai";
-import { using, getCurrentObject } from "../src/index";
+import {expect} from "chai";
+import {using, getCurrentObject} from "../src/index";
 
 /**
  * Represents a simple object that is accessible through a static property.
