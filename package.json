@@ -1,6 +1,6 @@
 {
   "name": "disposable-cls",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Provides disposable continuation local storage for Node.js.",
   "main": "src/index.js",
   "keywords": [
