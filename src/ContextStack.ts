@@ -1,13 +1,37 @@
 import {wrap, unwrap} from "shimmer";
 import {ContextStackItem} from "./ContextStackItem";
 
+
 /**
  * Reacts to Node.js asynchronous scheduling events and manages a scope stack that will
  * be preserved across those asynchronous invocations.
  */
 export class ContextStack implements NodeJS.AsyncListenerCallbacks {
+	private static ACTIVECONTEXT_PROCESS_SLOTNAME: string = "__cls_activecontext";
+
 	private static scopeStack: Object[] = [];
-	private static activeContext: ContextStackItem = null;
+
+	constructor() {
+		ContextStack.activeContext = null;
+	}
+
+	/**
+	 * Gets the current context stack item.
+	 * 
+	 * @returns The currently active context stack item.
+	 */
+	private static get activeContext(): ContextStackItem {
+		return process[ContextStack.ACTIVECONTEXT_PROCESS_SLOTNAME];
+	}
+
+	/**
+	 * Sets the current context stack item.
+	 * 
+	 * @param value The context stack item to make current.
+	 */
+	private static set activeContext(value: ContextStackItem) {
+		process[ContextStack.ACTIVECONTEXT_PROCESS_SLOTNAME] = value;
+	}
 
 	/**
 	 * Called by Node.js when an asynchronous function is being scheduled.
@@ -99,13 +123,13 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	* @param emitter The EventEmitter to bind.
 	*/
 	public bindEventEmitter(emitter: NodeJS.EventEmitter): void {
-		const ACTIVE_CONTEXT_PROPERTY: string = "__cls_capturedcontext";
+		const ACTIVECONTEXT_LISTENER_SLOTNAME: string = "__cls_capturedcontext";
 
 		let onAddListener = (originalAddListenerFunc: Function) => {
 			return function(event: string, listener: Function) {
-				listener[ACTIVE_CONTEXT_PROPERTY] = ContextStack.captureStackItem(ContextStack.activeContext);
+				listener[ACTIVECONTEXT_LISTENER_SLOTNAME] = ContextStack.captureStackItem(ContextStack.activeContext);
 
-				return originalAddListenerFunc.call(this, event, listener);
+				return originalAddListenerFunc.apply(this, arguments);
 			};
 		};
 
@@ -120,7 +144,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 				let currentContext = ContextStack.activeContext;
 
 				try {
-					ContextStack.activeContext = <ContextStackItem>listener[ACTIVE_CONTEXT_PROPERTY];
+					ContextStack.activeContext = <ContextStackItem>listener[ACTIVECONTEXT_LISTENER_SLOTNAME];
 
 					return originalEmitFunc.apply(this, arguments);
 				}
@@ -132,9 +156,9 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 		let onRemoveListener = (originalRemoveListenerFunc: Function) => {
 			return function(event: string, listener: Function) {
-				ContextStack.releaseStackItem(<ContextStackItem>listener[ACTIVE_CONTEXT_PROPERTY]);
+				ContextStack.releaseStackItem(<ContextStackItem>listener[ACTIVECONTEXT_LISTENER_SLOTNAME]);
 
-				return originalRemoveListenerFunc.call(this, event, listener);
+				return originalRemoveListenerFunc.apply(this, arguments);
 			};
 		};
 
@@ -186,6 +210,10 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	 * @returns The parent context stack item.
 	 */
 	private static releaseStackItem(contextStackItem: ContextStackItem): ContextStackItem {
+		if (!contextStackItem) {
+			return null; // nothing to release
+		}
+
 		let context = contextStackItem;
 
 		while (context) {

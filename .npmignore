@@ -4,3 +4,4 @@ tsconfig.json
 *.ts
 *.js.map
 coverage.html
+gruntfile.js
