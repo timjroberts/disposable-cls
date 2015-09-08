@@ -40,14 +40,14 @@ describe("Event Emitters", () => {
 			setImmediate(() => { emitter.emit("event", 10, "Hello"); });
 		});
 
-		it("should not allow the captured context items to be disposed of", (done) => {
+		it("should not allow the captured context items to be disposed of when listener is active", (done) => {
 			let wasDisposed = false;
 			let doneFlag = false;
 
 			let expectationsOnCompleteFunc = () => {
 				if (doneFlag) {
 					// Expect the wasDisposed flag to remain false because even though the using block will
-					// have completed, the bound EventEmitter will still receive emitted events. 
+					// have completed, the bound EventEmitter will still receive emitted events
 					expect(wasDisposed).to.be.false;
 
 					return done();
@@ -66,6 +66,40 @@ describe("Event Emitters", () => {
 
 					doneFlag = true;
 				});
+			});
+
+			setImmediate(expectationsOnCompleteFunc);
+			setImmediate(() => { emitter.emit("event"); });
+		});
+
+		it("should dipose of the context items when the last listener is removed", (done) => {
+			let wasDisposed = false;
+			let doneFlag = false;
+
+			let emitter = new EventEmitter();
+
+			let listener = function() { doneFlag = true; };
+
+			let expectationsOnCompleteFunc = () => {
+				if (doneFlag) {
+					expect(wasDisposed).to.be.false;
+
+					emitter.removeListener("event", listener);
+
+					// Expect the wasDisposed flag to become true because the event listener has now been removed
+					// from the EventEmitter
+					expect(wasDisposed).to.be.true;
+
+					return done();
+				}
+
+				setImmediate(expectationsOnCompleteFunc);
+			};
+
+			using([new SimpleDisposableMockObject(() => { wasDisposed = true; })], () => {
+				bindEventEmitter(emitter);
+
+				emitter.on("event", listener);
 			});
 
 			setImmediate(expectationsOnCompleteFunc);

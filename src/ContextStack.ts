@@ -1,4 +1,4 @@
-import wrapEmitter = require("emitter-listener");
+import {wrap, unwrap} from "shimmer";
 import {ContextStackItem} from "./ContextStackItem";
 
 /**
@@ -16,9 +16,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	 * throughout the lifetime of the asynchronous function being scheduled.
 	 */
 	public create(): ContextStackItem {
-		ContextStack.captureStackItem(ContextStack.activeContext);
-
-		return new ContextStackItem(ContextStack.scopeStack.pop(), ContextStack.activeContext);
+		return new ContextStackItem(ContextStack.scopeStack.pop(), ContextStack.captureStackItem(ContextStack.activeContext));
 	}
 
 	/**
@@ -40,7 +38,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	 * function.
 	 */
 	public after(context: any, contextStackItem: ContextStackItem): void {
-		ContextStack.releaseStackItem(contextStackItem);
+		ContextStack.activeContext = ContextStack.releaseStackItem(contextStackItem);
 	}
 
 	/**
@@ -51,7 +49,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	 * @param error The error that was thrown.
 	 */
 	public error(contextStackItem: any, error: Error): void {
-		ContextStack.releaseStackItem(contextStackItem);
+		ContextStack.activeContext = ContextStack.releaseStackItem(contextStackItem);
 	}
 
 	/**
@@ -103,22 +101,28 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	public bindEventEmitter(emitter: NodeJS.EventEmitter): void {
 		const ACTIVE_CONTEXT_PROPERTY: string = "__cls_capturedcontext";
 
-		let onAddListener = (listener: Function) => {
-			if (!listener) {
-				return;
-			}
+		let onAddListener = (originalAddListenerFunc: Function) => {
+			return function(event: string, listener: Function) {
+				listener[ACTIVE_CONTEXT_PROPERTY] = ContextStack.captureStackItem(ContextStack.activeContext);
 
-			listener[ACTIVE_CONTEXT_PROPERTY] = ContextStack.activeContext;
+				return originalAddListenerFunc.call(this, event, listener);
+			};
 		};
 
-		let onEmit = (listener: Function) => {
-			return function() {
+		let onEmit = (originalEmitFunc: Function) => {
+			return function(event: string, ...args: any[]) {
+				if (!this._events || !this._events[event]) {
+					return originalEmitFunc.apply(this, arguments);
+				}
+
+				var listener = this._events[event];
+
 				let currentContext = ContextStack.activeContext;
 
 				try {
 					ContextStack.activeContext = <ContextStackItem>listener[ACTIVE_CONTEXT_PROPERTY];
 
-					return listener.apply(this, arguments);
+					return originalEmitFunc.apply(this, arguments);
 				}
 				finally {
 					ContextStack.activeContext = currentContext;
@@ -126,9 +130,18 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 			};
 		};
 
-		ContextStack.captureStackItem(ContextStack.activeContext);
+		let onRemoveListener = (originalRemoveListenerFunc: Function) => {
+			return function(event: string, listener: Function) {
+				ContextStack.releaseStackItem(<ContextStackItem>listener[ACTIVE_CONTEXT_PROPERTY]);
 
-		wrapEmitter(emitter, onAddListener, onEmit);
+				return originalRemoveListenerFunc.call(this, event, listener);
+			};
+		};
+
+		wrap(emitter, "addListener", onAddListener);
+		wrap(emitter, "on", onAddListener);
+		wrap(emitter, "emit", onEmit);
+		wrap(emitter, "removeListener", onRemoveListener);
 	}
 
 	/**
@@ -152,8 +165,9 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	 * the entire stack.
 	 * 
 	 * @param contextStackItem The context stack item that is to be captured.
+	 * @returns The original context stack item.
 	 */
-	private static captureStackItem(contextStackItem: ContextStackItem): void {
+	private static captureStackItem(contextStackItem: ContextStackItem): ContextStackItem {
 		let context = contextStackItem;
 
 		while (context) {
@@ -161,14 +175,17 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 			context = context.parent;
 		}
+
+		return contextStackItem;
 	}
 
 	/**
 	 * Releases a given context stack item.
 	 * 
 	 * @param contextStackItem The context stack item that is to be released.
+	 * @returns The parent context stack item.
 	 */
-	private static releaseStackItem(contextStackItem: ContextStackItem): void {
+	private static releaseStackItem(contextStackItem: ContextStackItem): ContextStackItem {
 		let context = contextStackItem;
 
 		while (context) {
@@ -179,7 +196,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 			context = context.parent;
 		}
 
-		ContextStack.activeContext = contextStackItem.parent;
+		return contextStackItem.parent;
 	}
 
 	/**

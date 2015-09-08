@@ -21,7 +21,7 @@
   "license": "BSD",
   "dependencies": {
     "async-listener": "~0.5",
-    "emitter-listener": "~1.0"
+    "shimmer": "~1.0"
   },
   "devDependencies": {
     "matchdep": "~0.3",
