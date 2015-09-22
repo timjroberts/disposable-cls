@@ -11,6 +11,9 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 	private static scopeStack: Object[] = [];
 
+	/**
+	 * Initializes a new ContextStack.
+	 */
 	constructor() {
 		ContextStack.activeContext = null;
 	}

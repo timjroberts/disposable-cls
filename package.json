@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "matchdep": "~0.3",
-    "typescript": "1.6.0-dev.20150824",
+    "typescript": "^1.6",
     "tslint": "~2.4",
     "grunt-execute": "~0.2",
     "grunt-mocha-test": "~0.12",
