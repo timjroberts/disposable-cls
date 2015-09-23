@@ -8,14 +8,14 @@ import {ContextStackItem} from "./ContextStackItem";
  */
 export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	private static ACTIVECONTEXT_PROCESS_SLOTNAME: string = "__cls_activecontext";
-
-	private static scopeStack: Object[] = [];
+	private static SCOPESTACK_PROCESS_SLOTNAME: string = "__cls_scopestack";
 
 	/**
 	 * Initializes a new ContextStack.
 	 */
 	constructor() {
 		ContextStack.activeContext = null;
+		ContextStack.scopeStack = [];
 	}
 
 	/**
@@ -34,6 +34,24 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	 */
 	private static set activeContext(value: ContextStackItem) {
 		process[ContextStack.ACTIVECONTEXT_PROCESS_SLOTNAME] = value;
+	}
+
+	/**
+	 * Gets the current scope stack.
+	 * 
+	 * @returns The current scope stack.
+	 */
+	private static get scopeStack(): Object[] {
+		return process[ContextStack.SCOPESTACK_PROCESS_SLOTNAME];
+	}
+
+	/**
+	 * Sets the current scope stack.
+	 * 
+	 * @param value The scope stack to make current. 
+	 */
+	private static set scopeStack(value: Object[]) {
+		process[ContextStack.SCOPESTACK_PROCESS_SLOTNAME] = value;
 	}
 
 	/**
