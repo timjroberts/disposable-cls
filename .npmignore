@@ -5,5 +5,6 @@ tsconfig.json
 *.js.map
 coverage.html
 gruntfile.js
+typings
 
 !*.d.ts
