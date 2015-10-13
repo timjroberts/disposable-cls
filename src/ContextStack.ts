@@ -1,7 +1,6 @@
 import {wrap, unwrap} from "shimmer";
 import {ContextStackItem} from "./ContextStackItem";
 
-
 /**
  * Reacts to Node.js asynchronous scheduling events and manages a scope stack that will
  * be preserved across those asynchronous invocations.
@@ -20,7 +19,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 	/**
 	 * Gets the current context stack item.
-	 * 
+	 *
 	 * @returns The currently active context stack item.
 	 */
 	private static get activeContext(): ContextStackItem {
@@ -29,7 +28,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 	/**
 	 * Sets the current context stack item.
-	 * 
+	 *
 	 * @param value The context stack item to make current.
 	 */
 	private static set activeContext(value: ContextStackItem) {
@@ -38,7 +37,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 	/**
 	 * Called by Node.js when an asynchronous function is being scheduled.
-	 * 
+	 *
 	 * The contextual items pushed onto the managed scope stack are captured and maintained
 	 * throughout the lifetime of the asynchronous function being scheduled.
 	 */
@@ -48,7 +47,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 	/**
 	 * Called by Node.js before an asynchronous function is to be executed.
-	 * 
+	 *
 	 * @param context Represents the current 'this' object.
 	 * @param contextStackItem The context stack item that was created for the asynchronous
 	 * function.
@@ -59,7 +58,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 	/**
 	 * Called by Node.js after an asynchronous function has executed.
-	 * 
+	 *
 	 * @param context Represents the current 'this' object.
 	 * @param contextStackItem The context stack item that was created for the asynchronous
 	 * function.
@@ -70,7 +69,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 	/**
 	 * Called by Node.js if an asynchronous function has thrown an error.
-	 * 
+	 *
 	 * @param contextStackItem The context stack item that was created for the asynchronous
 	 * function.
 	 * @param error The error that was thrown.
@@ -82,7 +81,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	/**
 	 * Pushes contextual items onto the managed scope stack so that they can be captured as part
 	 * of a context stack item when the next asynchronous function is being scheduled.
-	 * 
+	 *
 	 * @param contextItems The array of objects to capture.
 	 */
 	public pushScope(contextItems: Object[]): void {
@@ -98,7 +97,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	/**
 	 * Searches the current context stack for a contextual item that was captured for the given
 	 * type of object.
-	 * 
+	 *
 	 * @param objectType The constructor function of the object that is required.
 	 * @returns The object that is currently in scope, or 'undefined' if none was found.
 	 */
@@ -122,7 +121,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 	/**
 	* Bind an EventEmitter to the currently active context stack.
-	* 
+	*
 	* @param emitter The EventEmitter to bind.
 	*/
 	public bindEventEmitter(emitter: NodeJS.EventEmitter): void {
@@ -173,7 +172,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 	/**
 	 * Resets the managed scope stack.
-	 * 
+	 *
 	 * @returns A boolean flag indicating if the ContextStack could be reset.
 	 */
 	public static tryReset(): boolean {
@@ -190,7 +189,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	/**
 	 * Captures a given context stack item by incrementing the reference counts across
 	 * the entire stack.
-	 * 
+	 *
 	 * @param contextStackItem The context stack item that is to be captured.
 	 * @returns The original context stack item.
 	 */
@@ -208,7 +207,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 
 	/**
 	 * Releases a given context stack item.
-	 * 
+	 *
 	 * @param contextStackItem The context stack item that is to be released.
 	 * @returns The parent context stack item.
 	 */
@@ -233,7 +232,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 	/**
 	 * Disposes of objects in a given object by calling their 'dispose()' function if they
 	 * have one.
-	 * 
+	 *
 	 * @param data An object that will be enumerated.
 	 */
 	private static disposeStackItemObjects(data: Object): void {
