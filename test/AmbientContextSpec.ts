@@ -1,3 +1,5 @@
+"use strict";
+
 import * as mocha from "mocha";
 import {expect} from "chai";
 import {using, getCurrentObject} from "../src/index";
@@ -19,7 +21,7 @@ class MockContext {
 
 	/**
 	 * Gets the identifier if the current mock object.
-	 * 
+	 *
 	 * @returns A number that uniquely identifies this mock object.
 	 */
 	public get id(): number {
@@ -28,7 +30,7 @@ class MockContext {
 
 	/**
 	 * Gets a flag indicating whether the object has been disposed.
-	 * 
+	 *
 	 * @returns 'true' if the object has been diposed; 'false' otherwise.
 	 */
 	public get isDisposed(): boolean {
@@ -44,9 +46,9 @@ class MockContext {
 
 	/**
 	 * Retrieves the current mock object from the current scope.
-	 * 
+	 *
 	 * @returns The current mock object; or 'undefined' if a mock object is not present
-	 * in the current scope. 
+	 * in the current scope.
 	 */
 	public static get current(): MockContext {
 		return <MockContext>getCurrentObject(MockContext);

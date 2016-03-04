@@ -1,3 +1,5 @@
+"use strict";
+
 import * as mocha from "mocha";
 import {expect} from "chai";
 import {ContextStack} from "../src/ContextStack";

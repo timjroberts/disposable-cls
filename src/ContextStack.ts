@@ -1,3 +1,5 @@
+"use strict";
+
 import {wrap, unwrap} from "shimmer";
 import {ContextStackItem} from "./ContextStackItem";
 
@@ -136,7 +138,7 @@ export class ContextStack implements NodeJS.AsyncListenerCallbacks {
 		};
 
 		let onEmit = (originalEmitFunc: Function) => {
-			return function(event: string, ...args: any[]) {
+			return function(event: string) {
 				if (!this._events || !this._events[event]) {
 					return originalEmitFunc.apply(this, arguments);
 				}

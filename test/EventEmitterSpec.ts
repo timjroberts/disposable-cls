@@ -1,3 +1,5 @@
+"use strict";
+
 import {EventEmitter} from "events";
 import * as mocha from "mocha";
 import {expect} from "chai";
@@ -28,10 +30,10 @@ describe("Event Emitters", () => {
 			using([new SimpleMockObject()], () => {
 				bindEventEmitter(emitter);
 
-				emitter.on("event", (...args: any[]) => {
-					expect(args).to.have.length(2);
-					expect(args[0]).to.be.equal(10);
-					expect(args[1]).to.be.equal("Hello");
+				emitter.on("event", function () {
+					expect(arguments).to.have.length(2);
+					expect(arguments[0]).to.be.equal(10);
+					expect(arguments[1]).to.be.equal("Hello");
 
 					done();
 				});

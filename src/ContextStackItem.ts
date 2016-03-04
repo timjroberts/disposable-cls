@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Represents a context stack item that holds contextual data and associated items
  * in scope for the duration of an asynchronous invocation.
@@ -9,7 +11,7 @@ export class ContextStackItem {
 
 	/**
 	 * Initializes a new context stack item.
-	 * 
+	 *
 	 * @param data An object that will be held in scope.
 	 * @param parent The parent context stack item.
 	 */
@@ -21,7 +23,7 @@ export class ContextStackItem {
 
 	/**
 	 * Gets the context data for the current context stack item.
-	 * 
+	 *
 	 * @returns An object that contains the context data for the current context stack item.
 	 */
 	public get data(): Object {
@@ -30,7 +32,7 @@ export class ContextStackItem {
 
 	/**
 	 * Gets the parent context stack item.
-	 * 
+	 *
 	 * @returns A context stack item that is the parent of the current.
 	 */
 	public get parent(): ContextStackItem {
@@ -39,7 +41,7 @@ export class ContextStackItem {
 
 	/**
 	 * Gets the reference count of the current context stack item.
-	 * 
+	 *
 	 * @returns The current reference count.
 	 */
 	public get refCount(): number {
@@ -48,7 +50,7 @@ export class ContextStackItem {
 
 	/**
 	 * Adds a reference to the current context stack item.
-	 * 
+	 *
 	 * @returns The current reference count.
 	 */
 	public addRef(): number {
@@ -57,7 +59,7 @@ export class ContextStackItem {
 
 	/**
 	 * Releases a reference from the current context stack item.
-	 * 
+	 *
 	 * @returns The current reference count.
 	 */
 	public release(): number {

@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Represents a very simple object.
  */
@@ -12,7 +14,7 @@ export class SimpleDisposableMockObject {
 
 	/**
 	 * Initializes a new instance of a disposable mock object.
-	 * 
+	 *
 	 * @param disposeCallback The callback that will be called when the current object
 	 * is being disposed.
 	 */
@@ -22,7 +24,7 @@ export class SimpleDisposableMockObject {
 
 	/**
 	 * Gets the identifier if the current mock object.
-	 * 
+	 *
 	 * @returns A number that uniquely identifies this mock object.
 	 */
 	public get id(): number {

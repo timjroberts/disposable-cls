@@ -1,3 +1,5 @@
+"use strict";
+
 import * as mocha from "mocha";
 import {expect} from "chai";
 import {ContextStack} from "../src/ContextStack";
@@ -18,7 +20,7 @@ describe("Single scope block", () => {
 		});
 	});
 
-	it("should dispose of the context items", () => {
+	it("should dispose of the context items", (done) => {
 		let wasDisposed = false;
 		let mockObject = new SimpleDisposableMockObject(() => { wasDisposed = true; });
 
@@ -26,7 +28,11 @@ describe("Single scope block", () => {
 			expect(wasDisposed).to.be.false;
 		});
 
-		expect(wasDisposed).to.be.false;
+        setImmediate(() => {
+            expect(wasDisposed).to.be.true;
+
+            done();
+        });
 	});
 });
 
