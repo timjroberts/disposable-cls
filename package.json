@@ -1,6 +1,6 @@
 {
   "name": "disposable-cls",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "Provides disposable continuation local storage for Node.js.",
   "main": "src/index.js",
   "keywords": [
@@ -30,7 +30,7 @@
     "grunt-execute": "~0.2",
     "grunt-mocha-test": "~0.12",
     "grunt-release": "~0.13",
-    "blanket": "~1.1",
+    "blanket": "1.1.6",
     "chai": "~3.2"
   }
 }
